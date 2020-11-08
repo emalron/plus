@@ -4,34 +4,32 @@
 
 int LA;
 int E(), E1(), T();
-int stack[MAX_SIZE];
-int commands[MAX_SIZE], index=0;
-int top = -1;
-int IsEmpty() {
+int queue[MAX_SIZE], index=0;
+int stack[MAX_SIZE], top=-1;
+int isEmpty() {
     if(top < 0)
         return 1;
     else
         return 0;
 }
-int IsFull() {
-    if(top >= MAX_SIZE)
+int isFull() {
+    if(top >= MAX_SIZE) 
         return 1;
     else
         return 0;
 }
-void push(int value) {
-    if(IsFull())
-        printf("error: stack is full.\n");
+void push(int t) {
+    if(!isFull()) 
+        stack[++top] = t;
     else
-        stack[++top] = value;
+        printf("stack is full\n");
 }
 int pop() {
-    if(IsEmpty())
-        printf("error: stack is empty\n");
+    if(isEmpty())
+        printf("stack is empty\n");
     else
         return stack[top--];
 }
-
 int yylex() {
     return getchar();
 }
@@ -47,44 +45,52 @@ int match(int t) {
         error();
     }
 }
+
 int main() {
     LA = getchar();
     E();
-    for(int i=0; i<index;i++) {
-        printf("%d ", commands[i]);
-    }
-    printf("\n");
-    int back[index];
-    int j = 0;
-    while(j<index) {
-        int L = commands[j];
-        if(L == 100) {
-            if(!IsEmpty()) {
-                int t_ = pop();
-                push(100);
-                back[i] = t_;
-            } else {
-                push(100);
+    int command[MAX_SIZE], len = 0;
+    for(int i=0; i<index; i++) {
+        int value = queue[i];
+        if(value != 100) {
+            command[len++] = value;
+        }
+        else {
+            if(isEmpty()) {
+                push(value);
             }
-        } else {
-            back[j] = L;
-            j++;
+            else {
+                int op = pop();
+                command[len++] = op;
+                push(value);
+            }
         }
     }
-    for(int i=0; i<index;i++) {
-        printf("%d ", back[i]);
+    while(!isEmpty()) {
+        command[len++] = pop();
     }
-    printf("\n");
-    for(int i=0; i<index; i++) {
-
+    top = -1;
+    for(int i=0; i<len; i++) {
+        int ahead = command[i];
+        if(ahead != 100) {
+            push(ahead);
+        } else {
+            int a_ = pop();
+            int b_ = pop();
+            int result = a_ + b_;
+            push(result);
+        }
+    }
+    printf("result: %d\n", pop());
 }
+
 int E() {
     T(); E1();
 }
 int E1() {
     if(LA == '+') {
         match('+');
-        commands[index++] = 100;
+        queue[index++] = 100;
         T(); E1();
     } else if(LA = EOF) {
         ;
@@ -99,7 +105,7 @@ int T() {
         if (LA == t_) {
             match(t_);
             int r_ = t_ - '0';
-            commands[index++] = r_;
+            queue[index++] = r_;
             printf("T: %c\n", t_);
             return 0;
         }
