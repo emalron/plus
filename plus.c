@@ -49,39 +49,10 @@ int match(int t) {
 int main() {
     LA = getchar();
     E();
-    int command[MAX_SIZE], len = 0;
-    for(int i=0; i<index; i++) {
-        int value = queue[i];
-        if(value != 100) {
-            command[len++] = value;
-        }
-        else {
-            if(isEmpty()) {
-                push(value);
-            }
-            else {
-                int op = pop();
-                command[len++] = op;
-                push(value);
-            }
-        }
-    }
     while(!isEmpty()) {
-        command[len++] = pop();
+        printf("%d ", pop());
     }
-    top = -1;
-    for(int i=0; i<len; i++) {
-        int ahead = command[i];
-        if(ahead != 100) {
-            push(ahead);
-        } else {
-            int a_ = pop();
-            int b_ = pop();
-            int result = a_ + b_;
-            push(result);
-        }
-    }
-    printf("result: %d\n", pop());
+    printf("\n");
 }
 
 int E() {
@@ -90,8 +61,11 @@ int E() {
 int E1() {
     if(LA == '+') {
         match('+');
-        queue[index++] = 100;
-        T(); E1();
+        T();
+        int left = pop();
+        int right = pop();
+        push(left+right);
+        E1();
     } else if(LA = EOF) {
         ;
     } else {
@@ -105,8 +79,7 @@ int T() {
         if (LA == t_) {
             match(t_);
             int r_ = t_ - '0';
-            queue[index++] = r_;
-            printf("T: %c\n", t_);
+            push(r_);
             return 0;
         }
     }
