@@ -6,6 +6,7 @@ int LA;
 int E(), E1(), T(), T1(), F();
 int queue[MAX_SIZE], index=0;
 int stack[MAX_SIZE], top=-1;
+char error_msg[256];
 int isEmpty() {
     if(top < 0)
         return 1;
@@ -34,7 +35,7 @@ int yylex() {
     return getchar();
 }
 int error(char *msg) {
-    printf("Syntax Error: %s\n", msg);
+    printf("%s\n", msg);
     exit(1);
 }
 int match(int t) {
@@ -72,9 +73,7 @@ int E() {
     int t = T();
     t = E1();
     if(t < 0) {
-        char msg[256];
-        sprintf(msg, "error %d %c", t, LA);
-        error(msg);
+        error(error_msg);
     }
 }
 int E1() {
@@ -82,6 +81,7 @@ int E1() {
         return 0;
     }
     if(LA != '+' && LA != '-') {
+        sprintf(error_msg, "invalid operator: %c", LA);
         return -1;
     }
     int t = 0;
@@ -111,6 +111,7 @@ int T1() {
         return 0;
     }
     if(LA != '*') {
+        sprintf(error_msg, "invalid operator: %c", LA);
         return -1;
     }
     if(LA == '*') {
@@ -137,7 +138,6 @@ int F() {
             return 1;
         }
     }
-    char msg[256];
-    sprintf(msg, "invalid terminal: %c", LA);
-    error(msg);
+    sprintf(error_msg, "invalid terminal: %c", LA);
+    error(error_msg);
 }
