@@ -49,10 +49,19 @@ int match(int t) {
 int main() {
     LA = getchar();
     E();
-    while(!isEmpty()) {
-        printf("%d ", pop());
+    for(int i=0; i<index; i++) {
+        int value = queue[i];
+        printf("%d ", value);
+        if(value == 100) {
+            int left = pop();
+            int right = pop();
+            push(left+right);
+        }
+        else {
+            push(value);
+        }
     }
-    printf("\n");
+    printf("\nresult: %d\n", pop());
 }
 
 int E() {
@@ -62,9 +71,7 @@ int E1() {
     if(LA == '+') {
         match('+');
         T();
-        int left = pop();
-        int right = pop();
-        push(left+right);
+        queue[index++] = 100;
         E1();
     } else if(LA = EOF) {
         ;
@@ -79,7 +86,7 @@ int T() {
         if (LA == t_) {
             match(t_);
             int r_ = t_ - '0';
-            push(r_);
+            queue[index++] = r_;
             return 0;
         }
     }
