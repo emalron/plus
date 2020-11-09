@@ -69,50 +69,75 @@ int main() {
 }
 
 int E() {
-    T(); E1();
+    int t = T();
+    t = E1();
+    if(t < 0) {
+        char msg[256];
+        sprintf(msg, "error %d %c", t, LA);
+        error(msg);
+    }
 }
 int E1() {
+    if(LA == EOF || LA == '\n') {
+        return 0;
+    }
+    if(LA != '+' && LA != '-') {
+        return -1;
+    }
+    int t = 0;
     if(LA == '+') {
         match('+');
-        T();
+        t = T();
         queue[index++] = 100;
-        E1();
+        t = E1();
+        return t;
     } else if(LA == '-') {
         match('-');
-        T();
+        t = T();
         queue[index++] = 101;
-        E1();
-    } else if(LA == EOF) {
-        ;
+        t = E1();
+        return t;
     } else {
-        // epsilon
+        ;
     }
 }
 int T() {
-    F(); T1();
+    int t = F();
+    t = T1();
+    return t;
 }
 int T1() {
+    if(LA == EOF || LA == '\n') {
+        return 0;
+    }
+    if(LA != '*') {
+        return -1;
+    }
     if(LA == '*') {
+        int t = 0;
         match('*');
-        F();
+        t = F();
         queue[index++] = 102;
-        T1();
+        t = T1();
+        return t;
     } else if(LA == EOF) {
         ;
     } else {
-        // epsilon
+        error("T1");
     }
 }
 int F() {
     char c = '0';
-    for(int i=0; i<100; i++) {
+    for(int i=0; i<10; i++) {
         char t_ = c + i;
         if (LA == t_) {
             match(t_);
             int r_ = t_ - '0';
             queue[index++] = r_;
-            return 0;
+            return 1;
         }
     }
-    error("invalid terminal");
+    char msg[256];
+    sprintf(msg, "invalid terminal: %c", LA);
+    error(msg);
 }
