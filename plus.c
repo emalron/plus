@@ -3,7 +3,7 @@
 #define MAX_SIZE 100
 
 int LA;
-int E(), E1(), T();
+int E(), E1(), T(), T1(), F();
 int queue[MAX_SIZE], index=0;
 int stack[MAX_SIZE], top=-1;
 int isEmpty() {
@@ -33,8 +33,8 @@ int pop() {
 int yylex() {
     return getchar();
 }
-int error() {
-    printf("Syntax Error\n");
+int error(char *msg) {
+    printf("Syntax Error: %s\n", msg);
     exit(1);
 }
 int match(int t) {
@@ -42,7 +42,7 @@ int match(int t) {
         LA = yylex();
         return 0;
     } else {
-        error();
+        error("match error");
     }
 }
 
@@ -53,9 +53,13 @@ int main() {
         int value = queue[i];
         printf("%d ", value);
         if(value == 100) {
-            int left = pop();
-            int right = pop();
-            push(left+right);
+            push(pop() + pop());
+        }
+        else if(value == 101) {
+            push(pop() - pop());
+        }
+        else if(value == 102) {
+            push(pop() * pop());
         }
         else {
             push(value);
@@ -73,13 +77,33 @@ int E1() {
         T();
         queue[index++] = 100;
         E1();
-    } else if(LA = EOF) {
+    } else if(LA == '-') {
+        match('-');
+        T();
+        queue[index++] = 101;
+        E1();
+    } else if(LA == EOF) {
         ;
     } else {
-        error();
+        // epsilon
     }
 }
 int T() {
+    F(); T1();
+}
+int T1() {
+    if(LA == '*') {
+        match('*');
+        F();
+        queue[index++] = 102;
+        T1();
+    } else if(LA == EOF) {
+        ;
+    } else {
+        // epsilon
+    }
+}
+int F() {
     char c = '0';
     for(int i=0; i<100; i++) {
         char t_ = c + i;
@@ -90,5 +114,5 @@ int T() {
             return 0;
         }
     }
-    error();
+    error("invalid terminal");
 }
